@@ -1,0 +1,14 @@
+In this document I note some assumptions I made and I talk about some concerns I have or things I would do differently, given the choice.
+
+The transaction reference has to be a numeric value. I assumed it fits into a 64 bits signed integer (long). It is also not clear if the number 01 should be considered distinct from the number 1, in case one should use a string instead. 
+
+The account number has to be an IBAN. For the sake of this assignment I didn't create any checks to see if the input indeed provides a valid IBAN. Some external libraries do exist for this purpose, see e.g. https://commons.apache.org/proper/commons-validator/apidocs/org/apache/commons/validator/routines/IBANValidator.html and https://www.garvelink.nl/java-iban/
+
+For the starting balance, end balance and mutation I also assumed they fit into 64 bits signed integers. In practice, however, one should also allow for (at least 2) decimals in the input, unless one could safely assume that all input is given in e.g. cents. 
+
+The assignment requires me to return the success status code (200) even on some specific cases where an error occurs. It would be better to give the appropriate 4xx status code, both for semantic reasons as well as to make it easier for consumers of this API to process the response. 
+
+It was not clear if a transaction with a unique reference but incorrect balance should be stored. I assumed it should not. 
+
+I used an in memory storage (a hashmap) for the transactions for the sake of this assignment. Of course, this means no real persistence is achieved. However, I wrote my code against an interface, which could be reimplemented using a database or some other kind of persistent storage. 
+
