@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientResponseException;
@@ -18,6 +21,37 @@ public class ITTransaction {
 	static final String TRANSACTION_URL = "http://localhost:8080/transaction";
 	static final RestTemplate REST_CLIENT = new RestTemplate();
 	static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	static final String FRAMEWORK_KEY = "framework";
+	static final String FRAMEWORK_JAVALIN = "javalin";
+
+	@BeforeAll
+	public static void startApp() throws InterruptedException {
+		String frameworkToUse = System.getenv(FRAMEWORK_KEY);
+//		System.out.println("*************");
+//		System.out.println(frameworkToUse);
+//		System.getenv().keySet().forEach(key -> {
+//			System.out.print(key + ": ");
+//			System.out.println(System.getenv().get(key));
+//		});
+		if (FRAMEWORK_JAVALIN.equals(frameworkToUse)) {
+			JavalinRabobank.startApp();
+			Thread.sleep(10000);
+		} else {
+			SpringBootRabobank.startApp();
+//			SpringBootRabobank.main(new String[0]);
+//			Thread.sleep(10000);
+		}
+	}
+
+	@AfterAll
+	public static void stopApp() {
+		String frameworkToUse = System.getenv(FRAMEWORK_KEY);
+		if (FRAMEWORK_JAVALIN.equals(frameworkToUse)) {
+			JavalinRabobank.stopApp();
+		} else {
+//			SpringBootRabobank.stopApp();
+		}
+	}
 
 	@Test
 	public void alwaysTrueTest() {
