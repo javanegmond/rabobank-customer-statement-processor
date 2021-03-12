@@ -35,7 +35,7 @@ public class ITTransaction {
 //		});
 		if (FRAMEWORK_JAVALIN.equals(frameworkToUse)) {
 			JavalinRabobank.startApp();
-			Thread.sleep(10000);
+//			Thread.sleep(10000);
 		} else {
 			SpringBootRabobank.startApp();
 //			SpringBootRabobank.main(new String[0]);
