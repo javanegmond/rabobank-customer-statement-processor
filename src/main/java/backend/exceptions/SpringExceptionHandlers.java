@@ -3,18 +3,18 @@ package backend.exceptions;
 import backend.transaction.TransactionResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class SpringExceptionHandlers {
 
-	//	This doesn't get executed, even when the method in the controller is commented out
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(JsonProcessingException.class)
-	public TransactionResponse handleJsonProcessingException(JsonProcessingException ex) {
-		System.out.println("###########################");
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public TransactionResponse handleJsonProcessingException(HttpMessageNotReadableException ex) {
 		TransactionResponse transactionResponse = new TransactionResponse();
 		transactionResponse.setResult("BAD_REQUEST");
 		return transactionResponse;
