@@ -22,7 +22,7 @@ public class TransactionService {
 		TransactionResponse response;
 
 		Map<TransactionError, Map<String, String>> errors = validateTransaction(transactionToSave);
-		if (errors.size() > 0) {
+		if (!errors.isEmpty()) {
 			response = createErrorResponse(errors);
 		} else {
 			transactionRepository.saveTransaction(transactionToSave);
@@ -32,8 +32,8 @@ public class TransactionService {
 		return response;
 	}
 
-	public Map<TransactionError, Map<String, String>> validateTransaction(TransactionRequest transactionToValidate) {
-		Map<TransactionError, Map<String, String>> errors = new EnumMap<>(TransactionError.class);
+	public EnumMap<TransactionError, Map<String, String>> validateTransaction(TransactionRequest transactionToValidate) {
+		EnumMap<TransactionError, Map<String, String>> errors = new EnumMap<>(TransactionError.class);
 
 		long reference = transactionToValidate.getTransactionReference();
 		if (transactionRepository.isTransactionReferenceUsed(reference)) {
@@ -64,20 +64,16 @@ public class TransactionService {
 	}
 
 	public static TransactionResponse createErrorResponse(Map<TransactionError, Map<String, String>> errors) {
-		TransactionResponse result = new TransactionResponse();
-		if (errors.containsKey(TransactionError.DUPLICATE_REFERENCE)) {
-			result.setResult(TransactionError.DUPLICATE_REFERENCE.toString());
-			Map<String, String> parameters = errors.get(TransactionError.DUPLICATE_REFERENCE);
-			result.addError(Long.parseLong(parameters.get(REFERENCE_KEY)), parameters.get(ACCOUNT_NUMBER_KEY));
-		}
-		if (errors.containsKey(TransactionError.INCORRECT_END_BALANCE)) {
-			String oldResultString = result.getResult();
-			String newResultString = concatenateResultStrings(oldResultString, TransactionError.INCORRECT_END_BALANCE.toString());
-			result.setResult(newResultString);
-			Map<String, String> parameters = errors.get(TransactionError.INCORRECT_END_BALANCE);
-			result.addError(Long.parseLong(parameters.get(REFERENCE_KEY)), parameters.get(ACCOUNT_NUMBER_KEY));
-		}
-		return result;
+		TransactionResponse errorResponse = new TransactionResponse();
+
+		errors.forEach((errorCode, parameters) -> {
+			String oldResultString = errorResponse.getResult();
+			String newResultString = concatenateResultStrings(oldResultString, errorCode.toString());
+			errorResponse.setResult(newResultString);
+			errorResponse.addError(Long.parseLong(parameters.get(REFERENCE_KEY)), parameters.get(ACCOUNT_NUMBER_KEY));
+		});
+
+		return errorResponse;
 	}
 
 	public static String concatenateResultStrings(String oldResult, String resultToAdd) {

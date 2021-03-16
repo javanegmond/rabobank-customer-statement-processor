@@ -14,8 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ITTransaction {
 
@@ -139,6 +138,7 @@ public class ITTransaction {
 		} catch (RestClientResponseException ex) {
 			expectedResponse = ex;
 		}
+		assertNotNull(expectedResponse);
 		assertEquals(400, expectedResponse.getRawStatusCode());
 
 		String responseBodyString = expectedResponse.getResponseBodyAsString();
