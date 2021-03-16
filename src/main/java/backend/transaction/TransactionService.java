@@ -2,15 +2,12 @@ package backend.transaction;
 
 import backend.transaction.model.TransactionRequest;
 import backend.transaction.model.TransactionResponse;
+import backend.transaction.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TransactionService {
-
-    public static final String REFERENCE_KEY = "reference";
-
-    public static final String ACCOUNT_NUMBER_KEY = "accountNumber";
 
     private final TransactionRepository transactionRepository;
 

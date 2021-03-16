@@ -1,4 +1,4 @@
-package backend.exceptions;
+package backend.transaction.exception;
 
 public class NonUniqueIDException
         extends RuntimeException {

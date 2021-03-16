@@ -1,9 +1,9 @@
 package backend.transaction;
 
-import backend.exceptions.InvalidTransactionException;
+import backend.transaction.exception.InvalidTransactionException;
 import backend.transaction.model.ErrorRecord;
-import backend.transaction.model.TransactionError;
 import backend.transaction.model.TransactionRequest;
+import backend.transaction.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;

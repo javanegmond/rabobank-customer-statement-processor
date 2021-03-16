@@ -1,6 +1,6 @@
-package backend.transaction;
+package backend.transaction.repository;
 
-import backend.exceptions.NonUniqueIDException;
+import backend.transaction.exception.NonUniqueIDException;
 import backend.transaction.model.TransactionRequest;
 import org.springframework.stereotype.Repository;
 

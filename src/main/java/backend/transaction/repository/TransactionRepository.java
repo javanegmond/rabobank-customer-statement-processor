@@ -1,4 +1,4 @@
-package backend.transaction;
+package backend.transaction.repository;
 
 import backend.transaction.model.TransactionRequest;
 

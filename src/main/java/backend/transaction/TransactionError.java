@@ -1,4 +1,4 @@
-package backend.transaction.model;
+package backend.transaction;
 
 public enum TransactionError {
     DUPLICATE_REFERENCE,

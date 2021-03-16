@@ -1,7 +1,8 @@
-package backend.exceptions;
+package backend.transaction.controller;
 
+import backend.transaction.exception.InvalidTransactionException;
 import backend.transaction.model.ErrorRecord;
-import backend.transaction.model.TransactionError;
+import backend.transaction.TransactionError;
 import backend.transaction.model.TransactionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -13,7 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-public class SpringExceptionHandlers {
+public class TransactionExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)

@@ -1,7 +1,7 @@
-package backend.exceptions;
+package backend.transaction.exception;
 
 import backend.transaction.model.ErrorRecord;
-import backend.transaction.model.TransactionError;
+import backend.transaction.TransactionError;
 
 import java.util.Map;
 

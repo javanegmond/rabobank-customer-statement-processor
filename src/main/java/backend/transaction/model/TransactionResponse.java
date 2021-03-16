@@ -13,10 +13,6 @@ public class TransactionResponse {
         return errorRecords.add(errorRecord);
     }
 
-    public void addError(long reference, String accountNumber) {
-        errorRecords.add(new ErrorRecord(reference, accountNumber));
-    }
-
     public String getResult() {
         return result;
     }
