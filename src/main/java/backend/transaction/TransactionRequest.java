@@ -14,6 +14,18 @@ public class TransactionRequest {
 	private String description;
 	private long endBalance;
 
+	public TransactionRequest() {
+	}
+
+	public TransactionRequest(long transactionReference, String accountNumber, long startBalance, long mutation, String description, long endBalance) {
+		this.transactionReference = transactionReference;
+		this.accountNumber = accountNumber;
+		this.startBalance = startBalance;
+		this.mutation = mutation;
+		this.description = description;
+		this.endBalance = endBalance;
+	}
+
 	public long getTransactionReference() {
 		return transactionReference;
 	}
