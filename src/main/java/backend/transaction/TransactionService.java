@@ -2,55 +2,58 @@ package backend.transaction;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class TransactionService {
 
 	private TransactionRepository transactionRepository;
 
-	private static final String DUPLICATE_REFERENCE_RESULT = "DUPLICATE_REFERENCE";
-	private static final String INCORRECT_BALANCE_RESULT = "INCORRECT_END_BALANCE";
-	//	is there supposed to be a space in this string?
-	private static final String DUPLICATE_REFERENCE_INCORRECT_BALANCE_RESULT = "DUPLICATE_REFERENCE _INCORRECT_END_BALANCE";
 
 	public TransactionService(TransactionRepository transactionRepository) {
 		this.transactionRepository = transactionRepository;
 	}
 
 	public TransactionResponse save(TransactionRequest transactionToSave) {
-		TransactionResponse response = new TransactionResponse();
-		boolean anyError = false;
+		TransactionResponse response;
 
-		long reference = transactionToSave.getTransactionReference();
-
-		if (transactionRepository.isTransactionReferenceUsed(reference)) {
-			TransactionRequest duplicateTransaction = transactionRepository.getTransaction(reference).orElseThrow();
-			response.addError(duplicateTransaction.getTransactionReference(), duplicateTransaction.getAccountNumber());
-			response.setResult(DUPLICATE_REFERENCE_RESULT);
-			anyError = true;
-		}
-
-		if (!isBalanceCorrect(transactionToSave.getStartBalance(), transactionToSave.getEndBalance(), transactionToSave.getMutation())) {
-			response.addError(reference, transactionToSave.getAccountNumber());
-			anyError = true;
-			if (response.getResult() != null) {
-				response.setResult(DUPLICATE_REFERENCE_INCORRECT_BALANCE_RESULT);
-			} else {
-				response.setResult(INCORRECT_BALANCE_RESULT);
-			}
-		}
-
-		if (!anyError) {
+		Map<TransactionError, ErrorRecord> errors = TransactionValidator.validateTransaction(transactionToSave, transactionRepository);
+		if (!errors.isEmpty()) {
+			response = createErrorResponse(errors);
+		} else {
 			transactionRepository.saveTransaction(transactionToSave);
+			response = new TransactionResponse();
 			response.setResult("SUCCESSFUL");
 		}
 		return response;
 	}
 
-	private boolean isBalanceCorrect(long startBalance, long endBalance, long mutation) {
+	public static boolean isBalanceCorrect(long startBalance, long endBalance, long mutation) {
 		try {
 			return endBalance == Math.addExact(startBalance, mutation);
 		} catch (ArithmeticException ex) {
 			return false;
 		}
+	}
+
+	public static TransactionResponse createErrorResponse(Map<TransactionError, ErrorRecord> errors) {
+		TransactionResponse errorResponse = new TransactionResponse();
+
+		errors.forEach((errorCode, parameters) -> {
+			String oldResultString = errorResponse.getResult();
+			String newResultString = concatenateResultStrings(oldResultString, errorCode.toString());
+			errorResponse.setResult(newResultString);
+			errorResponse.addError(parameters);
+		});
+
+		return errorResponse;
+	}
+
+	public static String concatenateResultStrings(String oldResult, String resultToAdd) {
+		if (oldResult == null || oldResult.isEmpty()) {
+			return resultToAdd;
+		}
+
+		return String.join(" _", oldResult, resultToAdd);
 	}
 }

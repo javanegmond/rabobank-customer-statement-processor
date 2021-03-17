@@ -5,19 +5,28 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ITTransaction {
 
 	static final String TRANSACTION_URL = "http://localhost:8080/transaction";
 	static final RestTemplate REST_CLIENT = new RestTemplate();
 	static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	static final HttpHeaders HEADERS = new HttpHeaders();
+
+	@BeforeAll
+	public static void setJsonContentType() {
+		HEADERS.setContentType(MediaType.APPLICATION_JSON);
+	}
 
 	@Test
 	public void alwaysTrueTest() {
@@ -27,7 +36,8 @@ public class ITTransaction {
 	@Test
 	public void submitValidTransaction() throws JsonProcessingException {
 		String validTransactionString = createJsonString(1, "NL123", 30, -5, "valid transaction", 25);
-		ResponseEntity<String> response = REST_CLIENT.postForEntity(TRANSACTION_URL, validTransactionString, String.class);
+		HttpEntity<String> request = new HttpEntity<>(validTransactionString, HEADERS);
+		ResponseEntity<String> response = REST_CLIENT.postForEntity(TRANSACTION_URL, request, String.class);
 		assertEquals(200, response.getStatusCodeValue());
 
 		String responseBodyString = response.getBody();
@@ -41,7 +51,8 @@ public class ITTransaction {
 	@Test
 	public void submitDuplicateTransaction() throws JsonProcessingException {
 		String originalTransactionString = createJsonString(2, "NL123", 30, -5, "valid transaction", 25);
-		ResponseEntity<String> response = REST_CLIENT.postForEntity(TRANSACTION_URL, originalTransactionString, String.class);
+		HttpEntity<String> request = new HttpEntity<>(originalTransactionString, HEADERS);
+		ResponseEntity<String> response = REST_CLIENT.postForEntity(TRANSACTION_URL, request, String.class);
 		assertEquals(200, response.getStatusCodeValue());
 
 		String responseBodyString = response.getBody();
@@ -53,7 +64,8 @@ public class ITTransaction {
 
 //		Now submit it again
 		String duplicateTransactionString = createJsonString(2, "NL456", 30, -5, "duplicate transaction", 25);
-		ResponseEntity<String> response2 = REST_CLIENT.postForEntity(TRANSACTION_URL, duplicateTransactionString, String.class);
+		HttpEntity<String> request2 = new HttpEntity<>(duplicateTransactionString, HEADERS);
+		ResponseEntity<String> response2 = REST_CLIENT.postForEntity(TRANSACTION_URL, request2, String.class);
 		assertEquals(200, response2.getStatusCodeValue());
 
 		String responseBodyString2 = response2.getBody();
@@ -69,7 +81,8 @@ public class ITTransaction {
 	@Test
 	public void submitIncorrectBalance() throws JsonProcessingException {
 		String incorrectBalanceString = createJsonString(3, "NL123", 30, -5, "incorrect balance", 15);
-		ResponseEntity<String> response = REST_CLIENT.postForEntity(TRANSACTION_URL, incorrectBalanceString, String.class);
+		HttpEntity<String> request = new HttpEntity<>(incorrectBalanceString, HEADERS);
+		ResponseEntity<String> response = REST_CLIENT.postForEntity(TRANSACTION_URL, request, String.class);
 		assertEquals(200, response.getStatusCodeValue());
 
 		String responseBodyString = response.getBody();
@@ -85,7 +98,8 @@ public class ITTransaction {
 	@Test
 	public void submitDuplicateAndIncorrectBalance() throws JsonProcessingException {
 		String originalTransactionString = createJsonString(4, "NL123", 30, -5, "valid transaction", 25);
-		ResponseEntity<String> response = REST_CLIENT.postForEntity(TRANSACTION_URL, originalTransactionString, String.class);
+		HttpEntity<String> request = new HttpEntity<>(originalTransactionString, HEADERS);
+		ResponseEntity<String> response = REST_CLIENT.postForEntity(TRANSACTION_URL, request, String.class);
 		assertEquals(200, response.getStatusCodeValue());
 
 		String responseBodyString = response.getBody();
@@ -97,7 +111,8 @@ public class ITTransaction {
 
 //		Now submit it again
 		String duplicateAndIncorrectBalanceTransactionString = createJsonString(4, "NL456", 30, -5, "duplicate and incorrect balance", 15);
-		ResponseEntity<String> response2 = REST_CLIENT.postForEntity(TRANSACTION_URL, duplicateAndIncorrectBalanceTransactionString, String.class);
+		HttpEntity<String> request2 = new HttpEntity<>(duplicateAndIncorrectBalanceTransactionString, HEADERS);
+		ResponseEntity<String> response2 = REST_CLIENT.postForEntity(TRANSACTION_URL, request2, String.class);
 		assertEquals(200, response2.getStatusCodeValue());
 
 		String responseBodyString2 = response2.getBody();
@@ -118,10 +133,12 @@ public class ITTransaction {
 		RestClientResponseException expectedResponse = null;
 
 		try {
-			ResponseEntity<String> response = REST_CLIENT.postForEntity(TRANSACTION_URL, incorrectJsonString, String.class);
+			HttpEntity<String> request = new HttpEntity<>(incorrectJsonString, HEADERS);
+			ResponseEntity<String> response = REST_CLIENT.postForEntity(TRANSACTION_URL, request, String.class);
 		} catch (RestClientResponseException ex) {
 			expectedResponse = ex;
 		}
+		assertNotNull(expectedResponse);
 		assertEquals(400, expectedResponse.getRawStatusCode());
 
 		String responseBodyString = expectedResponse.getResponseBodyAsString();
