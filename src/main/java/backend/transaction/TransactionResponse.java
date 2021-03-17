@@ -12,6 +12,10 @@ public class TransactionResponse {
 		errorRecords.add(new ErrorRecord(reference, accountNumber));
 	}
 
+	public void addError(ErrorRecord errorRecord) {
+		errorRecords.add(errorRecord);
+	}
+
 	public String getResult() {
 		return result;
 	}
