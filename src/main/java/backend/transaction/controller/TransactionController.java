@@ -1,6 +1,6 @@
 package backend.transaction.controller;
 
-import backend.transaction.TransactionService;
+import backend.transaction.service.TransactionService;
 import backend.transaction.model.TransactionRequest;
 import backend.transaction.model.TransactionResponse;
 import org.springframework.beans.factory.annotation.Autowired;

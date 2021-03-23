@@ -1,5 +1,6 @@
-package backend.transaction;
+package backend.transaction.service;
 
+import backend.transaction.TransactionError;
 import backend.transaction.exception.InvalidTransactionException;
 import backend.transaction.model.ErrorRecord;
 import backend.transaction.model.TransactionRequest;
